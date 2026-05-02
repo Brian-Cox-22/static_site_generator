@@ -42,3 +42,18 @@ class LeafNode(HTMLNode):
         return f"LeafNode({self.tag}, {self.value}, {self.props})"
 
 
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
+
+    def to_html(self):
+        if not self.tag:
+            raise ValueError
+        if not self.children:
+            raise ValueError("Missing Children")
+        else:
+            total = ""
+            for child in self.children:
+                piece = child.to_html()
+                total += piece
+            return f"<{self.tag}{self.props_to_html()}>{total}</{self.tag}>"
