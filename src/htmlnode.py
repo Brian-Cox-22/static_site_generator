@@ -25,3 +25,26 @@ class HTMLNode():
     
     def __repr__(self):
         return (f"Tag = {self.tag},\n value = {self.value},\n children = {self.children},\n props = {self.props}")
+    
+
+class LeafNode(HTMLNode):
+    def __init__(self, tag, value, props=None):
+        '''
+        tag - string of tag name  (e.g. "p", "a", "h1", etc.)
+        value - A string representing the value of the HTML tag (e.g. the text inside a paragraph)
+        Does not allow children
+        props - A dictionary of key-value pairs representing the attributes of the HTML tag 
+        '''
+        super().__init__(tag, value, None, props)
+    
+    def to_html(self):
+        if not self.value:
+            raise ValueError
+        
+        if self.tag == None:
+            self.tag = "p"
+        
+        return f"<{self.tag}>{self.value}</{self.tag}>"
+    
+    def __repr__(self):
+        return (f"Tag = {self.tag},\n value = {self.value},\n props = {self.props}")
