@@ -4,7 +4,7 @@ from enum import Enum
 def markdown_to_blocks(markdown: str):
     '''
     Takes a raw markdown string (full document) as input
-    Returns a list of block strings
+    Returns a list of block strings. 
     Assumes that each block will be seperated by a blank line
     '''
 

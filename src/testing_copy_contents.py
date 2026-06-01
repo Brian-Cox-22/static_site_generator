@@ -1,11 +1,5 @@
-from textnode import TextNode, TextType
 import os
 import shutil
-
-
-def main():
-    copy_contents("./static", "./public")
-
 
 
 def copy_contents(source_dir, destination_dir):
@@ -41,5 +35,6 @@ def copy_contents(source_dir, destination_dir):
 
 
 
+## Test 1
 
-main()
+copy_contents("./static", "./public")

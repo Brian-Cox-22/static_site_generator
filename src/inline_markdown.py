@@ -2,10 +2,10 @@ import re
 
 from textnode import TextType, TextNode
 
-def split_nodes_delimiter(old_nodes: TextNode, delimiter: str, text_type):
+def split_nodes_delimiter(old_nodes: list, delimiter: str, text_type):
     '''
     only for text types
-    old_nodes - list of nodes
+    old_nodes - list of TextNodes
     deliminator
     text_type - the type of text
     '''
