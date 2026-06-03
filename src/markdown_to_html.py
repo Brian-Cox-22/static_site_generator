@@ -2,6 +2,8 @@ from htmlnode import HTMLNode, LeafNode, ParentNode
 from block_markdown import markdown_to_blocks, block_to_block_type, BlockType
 from textnode import text_node_to_html_node, TextNode, TextType
 from inline_markdown import text_to_textnodes
+import os
+import shutil
 
 # split into markdown blocks
 def markdown_to_html_node(markdown):
@@ -53,10 +55,26 @@ def create_html_node_block(block) -> HTMLNode:
             new_lines.append(ParentNode("li", text_to_children(new)))
         parent_node = ParentNode("ol", new_lines)
     
+    
+    elif tag_text[0] == "blockquote":
+        lines = block.split("\n")
+        # print(lines)
+        new_lines = []
+        for line in lines:
+            # print("Test" + repr(line))
+            if not line.startswith(">"):
+                raise ValueError("invalid quote block")
+            new_lines.append(line.lstrip(">").strip())
+        content = " ".join(new_lines)
+        children = text_to_children(content)
+        parent_node = ParentNode("blockquote", children)
+    
+    
     else:
         parent_node = ParentNode(tag = tag_text[0], children=text_to_children(tag_text[1]))
 
-    
+    # print(f"tag_text:{tag_text[1]}")
+
     return parent_node
 
 
@@ -77,16 +95,13 @@ def determine_block_tag(block):
                 break
         
         tag = f"h{num_pound}"
-        output_text = block[num_pound:]
+        output_text = block[num_pound+1:]
     
     elif block_type == BlockType.PARAGRAPH:
         txt = block.split("\n")
         join = " ".join(txt)
         output_text = join
 
-    elif block_type == BlockType.ORDERED_LIST:
-        pass
-    
     else:
         tag = BlockType_lib[block_type]
     
@@ -107,3 +122,73 @@ def text_to_children(text: str):
 
     return leaf_nodes
     
+def extract_title(markdown) -> str:
+    '''
+    Takes a markdown file as input, returns the header if present, or an exception if not.
+    Note will return the first H1 header, even if multiple are preset
+    '''
+    markdown_lines = markdown.split("\n")
+    header = None
+    for line in markdown_lines:
+        if len(line) > 0:
+            if line[0] == "#":
+                if line[1] != "#":
+                    header = line
+                    break
+    
+
+    if header is not None:
+        # print(header[2:])
+        return header[2:]
+    else:
+        raise Exception("No H1 header present")
+
+
+def generate_path(from_path, template_path, dest_path):
+    '''
+    Assumes that from_path is a markdown file
+    '''
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+
+    # read the from path in as from_cont
+    if os.path.isfile(from_path):
+        with open(from_path) as f: from_cont = f.read()
+    else:
+        raise Exception(f"{from_path} is not a file")
+
+    # read the template in as temp_cont
+    if os.path.isfile(template_path):
+        with open(template_path) as f: temp_cont = f.read()
+    else:
+        raise Exception(f"{template_path} is not a file")
+    
+
+    # time to convert to an html string
+    # assuming that the markdown file is the from_path, opened as from_cont
+    node = markdown_to_html_node(from_cont)  
+    html = node.to_html()
+
+    title = extract_title(from_cont)   
+
+    # replace the title
+    temp_cont = temp_cont.replace("{{ Title }}", title)
+
+    # and the content
+    temp_cont = temp_cont.replace("{{ Content }}", html)
+
+    dirs = dest_path.split("/")
+    
+    
+    file_name = dirs[-1]
+    dirs = dirs[:-1]
+    dirs = "/".join(dirs)
+    # print(dirs)
+    # print(file_name)
+    # check that directories exist, make any that don't exhist
+    os.makedirs(dirs, exist_ok=True)
+
+    with open(f"{dest_path}", "w") as file:
+        file.write(temp_cont)
+
+
+generate_path("./content/index.md", "./template.html", "./public/index.html")

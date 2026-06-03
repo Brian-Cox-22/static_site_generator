@@ -1,10 +1,23 @@
 from textnode import TextNode, TextType
+from markdown_to_html import generate_path
 import os
 import shutil
 
 
+
+dir_path_static = "./static"
+dir_path_public = "./public"
+
 def main():
-    copy_contents("./static", "./public")
+    print("Deleting public directory...")
+    if os.path.exists(dir_path_public):
+        shutil.rmtree(dir_path_public)
+
+    print("Copying static files to public directory...")
+    copy_contents(dir_path_static, dir_path_public)
+
+    # generate content
+    generate_path("./content/index.md", "./template.html", "./public/index.html")
 
 
 
@@ -36,10 +49,12 @@ def copy_contents(source_dir, destination_dir):
     
     # If its a file, just move the file
     elif os.path.isfile(source_dir):
-        print(source_dir)
+        # print(source_dir)
         shutil.copy2(source_dir, destination_dir)
 
 
 
+
+    
 
 main()
