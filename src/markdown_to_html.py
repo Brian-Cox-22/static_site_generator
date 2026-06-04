@@ -144,51 +144,6 @@ def extract_title(markdown) -> str:
         raise Exception("No H1 header present")
 
 
-def generate_path(from_path, template_path, dest_path):
-    '''
-    Assumes that from_path is a markdown file
-    '''
-    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
-
-    # read the from path in as from_cont
-    if os.path.isfile(from_path):
-        with open(from_path) as f: from_cont = f.read()
-    else:
-        raise Exception(f"{from_path} is not a file")
-
-    # read the template in as temp_cont
-    if os.path.isfile(template_path):
-        with open(template_path) as f: temp_cont = f.read()
-    else:
-        raise Exception(f"{template_path} is not a file")
-    
-
-    # time to convert to an html string
-    # assuming that the markdown file is the from_path, opened as from_cont
-    node = markdown_to_html_node(from_cont)  
-    html = node.to_html()
-
-    title = extract_title(from_cont)   
-
-    # replace the title
-    temp_cont = temp_cont.replace("{{ Title }}", title)
-
-    # and the content
-    temp_cont = temp_cont.replace("{{ Content }}", html)
-
-    dirs = dest_path.split("/")
-    
-    
-    file_name = dirs[-1]
-    dirs = dirs[:-1]
-    dirs = "/".join(dirs)
-    # print(dirs)
-    # print(file_name)
-    # check that directories exist, make any that don't exhist
-    os.makedirs(dirs, exist_ok=True)
-
-    with open(f"{dest_path}", "w") as file:
-        file.write(temp_cont)
 
 
-generate_path("./content/index.md", "./template.html", "./public/index.html")
+# generate_path("./content/index.md", "./template.html", "./public/index.html")
