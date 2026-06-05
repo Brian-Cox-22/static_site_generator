@@ -11,7 +11,7 @@ else:
     basepath = "/"
 
 dir_path_static = "./static"
-dir_path_public = "./public"
+dir_path_public = "./docs"
 
 def main():
     print("Deleting public directory...")
@@ -23,7 +23,7 @@ def main():
 
     
     # generate content
-    generate_pages_recursive("./content", "./template.html", "./public", basepath)
+    generate_pages_recursive("./content", "./template.html", "./docs", basepath)
 
 
 
