@@ -35,7 +35,7 @@ def copy_contents(source_dir, destination_dir):
         # print(source_dir)
         shutil.copy2(source_dir, destination_dir)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, base_path):
     '''
     Assumes that from_path is a markdown file
     '''
@@ -67,6 +67,11 @@ def generate_page(from_path, template_path, dest_path):
     # and the content
     temp_cont = temp_cont.replace("{{ Content }}", html)
 
+
+    # Update the basepath
+    temp_cont = temp_cont.replace('href="/', f'href="{base_path}')
+    temp_cont = temp_cont.replace('src="/', f'src="{base_path}')
+
     dirs = dest_path.split("/")
     
     
@@ -84,7 +89,7 @@ def generate_page(from_path, template_path, dest_path):
         file.write(temp_cont)
 
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, base_path):
     '''
     Recursivly generates a new .html file for every .md file using the same template.html
     dir_path_content should be a directory with .md files in it.
@@ -93,7 +98,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
 
     if os.path.isfile(dir_path_content): # and dir_path_content.split(".", 1)[1] == "md":
         dest_path = dest_dir_path.replace(".md", ".html")
-        generate_page(dir_path_content, template_path, dest_path)
+        generate_page(dir_path_content, template_path, dest_path, base_path)
 
     elif os.path.isdir(dir_path_content):
         files = os.listdir(dir_path_content)
@@ -101,7 +106,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
         for file in files:
             # print(os.path.join(dir_path_content, file))
             destination = os.path.join(dest_dir_path, file)
-            generate_pages_recursive(os.path.join(dir_path_content, file), template_path, destination)
+            generate_pages_recursive(os.path.join(dir_path_content, file), template_path, destination, base_path)
 
     else:
         raise Exception(f"{dir_path_content} was neither a .md file or a directory")
